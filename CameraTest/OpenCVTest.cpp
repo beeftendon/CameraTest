@@ -35,10 +35,14 @@ double GetCounter()
 
 int main(int argc, char** argv)
 {
-	CvCapture* capture = cvCaptureFromCAM(CV_CAP_ANY);
-	cvSetCaptureProperty(capture, CV_CAP_PROP_FPS, 240);
-
-	if (!capture)
+	VideoCapture capture(CV_CAP_ANY);
+	capture.set(CV_CAP_PROP_FPS, 240);
+	int test = capture.get(CV_CAP_PROP_FPS);
+	//capture.set(CV_CAP_PROP_EXPOSURE, -5);
+	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 200);
+	capture.set(CV_CAP_PROP_FRAME_WIDTH, 200);
+	
+	if (!capture.isOpened())
 	{
 		fprintf(stderr, "ERROR: No camera detected\n");
 		getchar();
@@ -53,7 +57,9 @@ int main(int argc, char** argv)
 	while (1)
 	{
 		StartCounter();
-		Mat frame = cvQueryFrame(capture);
+		Mat frame;
+		capture >> frame;
+		//Mat frame = cvQueryFrame(capture);
 		if (frame.empty())
 		{
 			fprintf(stderr, "ERROR: Frame is null\n");
@@ -61,14 +67,15 @@ int main(int argc, char** argv)
 			break;
 		}
 		imshow("Window", frame);
-		char c = cvWaitKey(10);
+		char c = cvWaitKey(1);
 		if (c == 27) break;
 
 		timefile << GetCounter() << "\n";
 		
 	}
 
-	cvReleaseCapture(&capture);
+	//cvReleaseCapture(&capture);
+	capture.release();
 	destroyWindow("Window");
 	timefile.close();
 	return 0;
