@@ -56,21 +56,22 @@ int main(int argc, char** argv)
 
 	while (1)
 	{
-		StartCounter();
 		Mat frame;
+
+		StartCounter();
 		capture >> frame;
-		//Mat frame = cvQueryFrame(capture);
 		if (frame.empty())
 		{
 			fprintf(stderr, "ERROR: Frame is null\n");
 			getchar();
 			break;
 		}
+		timefile << GetCounter() << "\n";
+
 		imshow("Window", frame);
 		char c = cvWaitKey(1);
 		if (c == 27) break;
 
-		timefile << GetCounter() << "\n";
 		
 	}
 
