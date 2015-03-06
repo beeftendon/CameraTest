@@ -32,15 +32,15 @@ double GetCounter()
 	QueryPerformanceCounter(&li);
 	return double(li.QuadPart - CounterStart) / PCFreq;
 }
-
+/*
 int main(int argc, char** argv)
 {
 	VideoCapture capture(CV_CAP_ANY);
-	capture.set(CV_CAP_PROP_FPS, 240);
+	capture.set(CV_CAP_PROP_FPS, 360);
 	int test = capture.get(CV_CAP_PROP_FPS);
 	//capture.set(CV_CAP_PROP_EXPOSURE, -5);
-	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 200);
-	capture.set(CV_CAP_PROP_FRAME_WIDTH, 200);
+	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 80);
+	capture.set(CV_CAP_PROP_FRAME_WIDTH, 80);
 	
 	if (!capture.isOpened())
 	{
@@ -54,10 +54,12 @@ int main(int argc, char** argv)
 	ofstream timefile;
 	timefile.open("timedata.txt");
 
+	StartCounter();
 	while (1)
 	{
 		Mat frame;
 
+		timefile << GetCounter() << "\n";
 		StartCounter();
 		capture >> frame;
 		if (frame.empty())
@@ -66,13 +68,12 @@ int main(int argc, char** argv)
 			getchar();
 			break;
 		}
-		timefile << GetCounter() << "\n";
 
-		imshow("Window", frame);
-		char c = cvWaitKey(1);
-		if (c == 27) break;
+		//imshow("Window", frame);
+		//char c = cvWaitKey(1);
+		//if (c == 27) break;
 
-		
+
 	}
 
 	//cvReleaseCapture(&capture);
@@ -80,4 +81,4 @@ int main(int argc, char** argv)
 	destroyWindow("Window");
 	timefile.close();
 	return 0;
-}
+}*/

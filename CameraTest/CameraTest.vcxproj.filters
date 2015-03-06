@@ -18,28 +18,8 @@
     <ClCompile Include="OpenCVTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\lib\cvBlob\cvBlob\cvaux.cpp">
+    <ClCompile Include="FindBlob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\lib\cvBlob\cvBlob\cvblob.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\lib\cvBlob\cvBlob\cvcolor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\lib\cvBlob\cvBlob\cvcontour.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\lib\cvBlob\cvBlob\cvlabel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\lib\cvBlob\cvBlob\cvtrack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\..\lib\cvBlob\cvBlob\cvblob.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
