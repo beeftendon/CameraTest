@@ -5,8 +5,10 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 using namespace cv;
+using namespace std;
 
 void readme();
 
@@ -17,7 +19,11 @@ int main(int argc, char** argv)
 	Mat img_object = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
 	//Mat img_scene = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE);
 	Mat img_scene;
+	Mat img_scene_cap;
 	VideoCapture capture(CV_CAP_ANY);
+	capture.set(CV_CAP_PROP_FPS, 60);
+	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 400);
+	capture.set(CV_CAP_PROP_FRAME_WIDTH, 400);
 
 	while (true)
 	{
@@ -26,11 +32,14 @@ int main(int argc, char** argv)
 		{
 			std::cout << " --(!) Error reading images " << std::endl; return -1;
 		}
+		
+		//cvtColor(img_scene_cap, img_scene, CV_BayerRG2GRAY);
 
 		//-- Step 1: Detect the keypoints using SURF Detector
-		int minHessian = 400;
+		int minHessian = 50;
 
 		SurfFeatureDetector detector(minHessian);
+		//ORB detector(minHessian);
 
 		std::vector<KeyPoint> keypoints_object, keypoints_scene;
 
@@ -42,15 +51,36 @@ int main(int argc, char** argv)
 
 		Mat descriptors_object, descriptors_scene;
 
+		if (keypoints_object.empty())
+		{
+			cvError(0, "MatchFinder", "Object keypoints empty", __FILE__, __LINE__);
+		}
+		if (keypoints_scene.empty())
+		{
+			char c = waitKey(1);
+			if (c == 27) return 0;
+			continue;
+			//cvError(0, "MatchFinder", "Scene keypoints empty", __FILE__, __LINE__);
+		}
+
 		extractor.compute(img_object, keypoints_object, descriptors_object);
 		extractor.compute(img_scene, keypoints_scene, descriptors_scene);
+
+		if (descriptors_object.empty())
+		{
+			cvError(0, "MatchFinder", "Object descriptor empty", __FILE__, __LINE__);
+		}
+		if (descriptors_scene.empty())
+		{
+			//cvError(0, "MatchFinder", "Scene descriptor empty", __FILE__, __LINE__);
+		}
 
 		//-- Step 3: Matching descriptor vectors using FLANN matcher
 		FlannBasedMatcher matcher;
 		std::vector< DMatch > matches;
 		matcher.match(descriptors_object, descriptors_scene, matches);
 
-		double max_dist = 0; double min_dist = 100;
+		double max_dist = 0; double min_dist = 10;
 
 		//-- Quick calculation of max and min distances between keypoints
 		for (int i = 0; i < descriptors_object.rows; i++)
@@ -90,13 +120,25 @@ int main(int argc, char** argv)
 			scene.push_back(keypoints_scene[good_matches[i].trainIdx].pt);
 		}
 
-		Mat H = findHomography(obj, scene, CV_RANSAC);
-
 		//-- Get the corners from the image_1 ( the object to be "detected" )
 		std::vector<Point2f> obj_corners(4);
+		std::vector<Point2f> scene_corners(4);
+		Mat H;
+
+		try
+		{
+			H = findHomography(obj, scene, CV_RANSAC);
+
+		}
+		catch (...)
+		{
+			char c = waitKey(1);
+			if (c == 27) return 0;
+			continue;
+		}
+
 		obj_corners[0] = cvPoint(0, 0); obj_corners[1] = cvPoint(img_object.cols, 0);
 		obj_corners[2] = cvPoint(img_object.cols, img_object.rows); obj_corners[3] = cvPoint(0, img_object.rows);
-		std::vector<Point2f> scene_corners(4);
 
 		perspectiveTransform(obj_corners, scene_corners, H);
 

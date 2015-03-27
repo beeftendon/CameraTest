@@ -40,9 +40,6 @@
 //	int lowThreshold = 60;
 //	int thresholdRatio = 10;
 //	int kernelSize = 3;
-//	
-//	ORB orb;
-//	orb()
 //
 //	vector<vector<Point>> contours;
 //	vector<Vec4i> hierarchy;
@@ -51,8 +48,8 @@
 //	VideoCapture capture(CV_CAP_ANY);
 //
 //	capture.set(CV_CAP_PROP_FPS, 60);
-//	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 1280);
-//	capture.set(CV_CAP_PROP_FRAME_WIDTH, 720);
+//	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 400);
+//	capture.set(CV_CAP_PROP_FRAME_WIDTH, 400);
 //	
 //	if (!capture.isOpened())
 //	{
