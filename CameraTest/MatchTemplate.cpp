@@ -7,10 +7,11 @@
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-//#include "opencv2/gpu/gpu.hpp"
+#include "opencv2\nonfree\gpu.hpp"
 
 using namespace cv;
 using namespace std;
+using namespace gpu;
 
 // HiRes Windows timer, this part is usable only if compiled/run in Windows
 
@@ -40,6 +41,7 @@ double GetCounter()
 /** @function main */
 int main(int argc, char** argv)
 {
+
 	Mat img_object = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
 	img_object = img_object > 160;
 	blur(img_object, img_object, Size(3, 3));
@@ -50,6 +52,10 @@ int main(int argc, char** argv)
 	capture.set(CV_CAP_PROP_FPS, 60);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 200);
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, 200);
+
+	GpuMat test;
+	SURF_GPU surf;
+	//test.upload(img_object);
 
 	ofstream timefile;
 	timefile.open("timedata.txt");
@@ -71,7 +77,6 @@ int main(int argc, char** argv)
 		cvError(0, "MatchFinder", "Object keypoints empty", __FILE__, __LINE__);
 	}
 	extractor.compute(img_object, keypoints_object, descriptors_object);
-
 	while (true)
 	{
 		StartCounter();
