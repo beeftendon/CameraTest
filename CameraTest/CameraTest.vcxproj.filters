@@ -18,7 +18,7 @@
     <ClCompile Include="OpenCVTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FindBlob.cpp">
+    <ClCompile Include="MatchTemplate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

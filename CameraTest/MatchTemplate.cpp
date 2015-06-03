@@ -163,6 +163,7 @@ int main(int argc, char** argv)
 		std::vector<Point2f> obj;
 		std::vector<Point2f> scene;
 
+
 		for (int i = 0; i < good_matches.size(); i++)
 		{
 			//-- Get the keypoints from the good matches
