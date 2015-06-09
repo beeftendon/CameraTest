@@ -69,12 +69,12 @@ int main(int argc, char** argv)
 	int total_frames = 1000;
 	while (total_frames > 0)
 	{
-		Mat frame, frameEdges;
+		Mat frame_orig, frame, frameEdges;
 
 		timefile << GetCounter() << "\n";
 		StartCounter();
-		capture >> frame;
-		if (frame.empty())
+		capture >> frame_orig;
+		if (frame_orig.empty())
 		{
 			fprintf(stderr, "ERROR: Frame is null\n");
 			getchar();
@@ -82,11 +82,11 @@ int main(int argc, char** argv)
 		}
 
 		// Convert the frame to grayscale
-		cvtColor(frame, frame, CV_BGR2GRAY);
+		cvtColor(frame_orig, frame, CV_BGR2GRAY);
 
 		blur(frame, frame, Size(10, 10));
 
-		threshold(frame, frame, 128, 255, CV_THRESH_BINARY);
+		threshold(frame, frame, 36, 255, CV_THRESH_BINARY);
 		//imshow("Camera", frame);
 
 		// Detect edges and find contours
@@ -97,7 +97,6 @@ int main(int argc, char** argv)
 		// Find largest respective contours
 		int largest_area = 0;
 		int largest_contour_index_frame = -1;
-		int largest_contour_index_template = -1;
 		double area = 0;
 		vector<Point> largest_contour;
 		// Frame
@@ -109,16 +108,6 @@ int main(int argc, char** argv)
 				largest_area = area;
 				largest_contour_index_frame = i;
 				largest_contour = contours[i];
-			}
-		}
-		// Template
-		for (int i = 0; i < template_contours.size(); i++)
-		{
-			double area = contourArea(template_contours[i], false);
-			if (area > largest_area)
-			{
-				largest_area = area;
-				largest_contour_index_template = i;
 			}
 		}
 
@@ -142,17 +131,27 @@ int main(int argc, char** argv)
 		/// }
 
 		// Draw one contour
-		if (!contours.empty())
+		if (!largest_contour.empty())
 		{
 			Scalar color_white = Scalar(255, 255, 255);
 			Scalar color_red = Scalar(255, 0, 0);
 			Scalar color_green = Scalar(0, 255, 0);
 			drawContours(drawing, contours, largest_contour_index_frame, color_white, CV_FILLED, 8, hierarchy, 0, Point());
-			ellipse(drawing, boundingEllipse, color_red, 2, 8);
+			
+			// Bounding ellipse
+			ellipse(drawing, boundingEllipse, color_green, 2, 8);
+			
+			// Find moment, convert to point, and draw as a circle
+			Moments moment = moments(largest_contour); // Find moment
+			Point2f m_coord = Point2f(moment.m10 / moment.m00, moment.m01 / moment.m00);
+			circle(drawing, m_coord, 3, color_green, CV_FILLED);
+			
+			/* Comment out rectangle for now because I'm tracking a ball and its roundness is confusing the box
 			Point2f rect_points[4];
 			boundingRect.points(rect_points);
 			for (int i = 0; i < 4; i++)
 				line(drawing, rect_points[i], rect_points[(i + 1) % 4], color_green, 1, 8);
+			*/
 		}
 
 
