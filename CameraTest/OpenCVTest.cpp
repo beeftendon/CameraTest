@@ -51,6 +51,9 @@ int main(int argc, char** argv)
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 200);
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, 200);
 
+	Mat img_template = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+	//Mat img_template = imread("fly_template.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+	Mat template_edges;
 	if (!capture.isOpened())
 	{
 		fprintf(stderr, "ERROR: No camera detected\n");
@@ -58,11 +61,28 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
+	if (img_template.empty())
+	{
+		fprintf(stderr, "ERROR: Template image is empty");
+		getchar();
+		return -1;
+	}
+	blur(img_template, img_template, Size(10,10));
+	threshold(img_template, img_template, 10, 255, CV_THRESH_BINARY);
+
+
+	Canny(img_template, template_edges, lowThreshold, lowThreshold*thresholdRatio, kernelSize);
+	findContours(template_edges, template_contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE, Point(0, 0));
+
 	//namedWindow("Camera", CV_WINDOW_AUTOSIZE);
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
+	//namedWindow("Template", CV_WINDOW_AUTOSIZE);
 	
 	ofstream timefile;
 	timefile.open("timedata.txt");
+
+	ofstream matchfile;
+	matchfile.open("matchdata.txt");
 
 	StartCounter();
 	bool show_feed = true;
@@ -80,6 +100,7 @@ int main(int argc, char** argv)
 			getchar();
 			break;
 		}
+
 
 		// Convert the frame to grayscale
 		cvtColor(frame, frame, CV_BGR2GRAY);
@@ -133,6 +154,7 @@ int main(int argc, char** argv)
 
 		// Draw contours
 		Mat drawing = Mat::zeros(frameEdges.size(), CV_8UC3);
+		Mat template_drawing = Mat::zeros(template_edges.size(), CV_8UC3);
 
 		// Draw every contour
 		/// for (int i = 0; i< contours.size(); i++)
@@ -159,6 +181,7 @@ int main(int argc, char** argv)
 		if (show_feed == true)
 		{
 			imshow("Contours", drawing);
+			imshow("Template", template_drawing);
 			char c = cvWaitKey(1);
 			if (c == 27) break;
 		}
